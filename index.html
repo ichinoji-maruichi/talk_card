@@ -26,6 +26,21 @@ body {
   display:flex; gap:24px; align-items:flex-start;
 }
 
+/* ━━━ モードタブ ━━━ */
+.mode-tabs { display:flex; gap:8px; margin-bottom:16px; }
+.mode-tab {
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(196,149,106,.25); border-radius:8px;
+  color:rgba(200,200,200,.6); font-size:12px; letter-spacing:1px;
+  padding:8px 22px; cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif; transition:all .15s;
+}
+.mode-tab:hover { border-color:rgba(196,149,106,.5); color:#e8e0f0; }
+.mode-tab.active {
+  background:linear-gradient(135deg,#8b6030,#c4956a);
+  border-color:rgba(255,210,120,.6); color:#fff; font-weight:700;
+}
+
 /* 左右2列パネル */
 .panels {
   display:flex; gap:16px; flex-shrink:0; width:700px;
@@ -142,13 +157,13 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
 
 /* 外枠帯 */
 #fb-top    { position:absolute; top:0;    left:0; right:0;  height:18px; z-index:25; border-radius:16px 16px 0 0; overflow:hidden; }
-#fb-bottom { position:absolute; bottom:0; left:0; right:0;  height:18px; z-index:25; border-radius:0 0 16px 16px; overflow:hidden; }
-#fb-left   { position:absolute; top:18px; left:0; width:18px; bottom:18px; z-index:25; overflow:hidden; }
-#fb-right  { position:absolute; top:18px; right:0; width:18px; bottom:18px; z-index:25; overflow:hidden; }
+#fb-bottom { position:absolute; bottom:0; left:0; right:0;  height:34px; z-index:25; border-radius:0 0 16px 16px; overflow:hidden; }
+#fb-left   { position:absolute; top:18px; left:0; width:18px; bottom:34px; z-index:25; overflow:hidden; }
+#fb-right  { position:absolute; top:18px; right:0; width:18px; bottom:34px; z-index:25; overflow:hidden; }
 
 
 /* 外枠線 */
-#frame-line { position:absolute; inset:18px; border-radius:6px; pointer-events:none; z-index:27; }
+#frame-line { position:absolute; inset:18px 18px 34px 18px; border-radius:6px; pointer-events:none; z-index:27; }
 
 /* 四隅ジェム */
 .gem-corner { position:absolute; width:16px; height:16px; z-index:28; pointer-events:none; }
@@ -160,8 +175,8 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
 .gem-corner::after  { width:6px;  height:6px;  background:rgba(196,149,106,.4); }
 .gem-tl { top:6px;    left:6px; }
 .gem-tr { top:6px;    right:6px; }
-.gem-bl { bottom:6px; left:6px; }
-.gem-br { bottom:6px; right:6px; }
+.gem-bl { bottom:22px; left:6px; }
+.gem-br { bottom:22px; right:6px; }
 
 /* ネームバー */
 .name-bar { position:absolute; top:18px; left:18px; right:18px; padding:9px 13px 7px; background:rgba(10,6,16,.68); border-radius:5px; z-index:20; }
@@ -170,7 +185,7 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
 .char-name { font-size:28px; font-weight:900; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.8); line-height:1.15; letter-spacing:2px; min-height:32px; white-space:nowrap; overflow:hidden; }
 
 /* 情報バー */
-.info-bar { position:absolute; bottom:18px; left:18px; right:18px; background:rgba(10,6,16,.75); border-radius:5px; padding:9px 13px 11px; z-index:20; }
+.info-bar { position:absolute; bottom:34px; left:18px; right:18px; background:rgba(10,6,16,.75); border-radius:5px; padding:9px 13px 11px; z-index:20; }
 .info-section-row { display:flex; gap:14px; margin-bottom:7px; }
 .info-col { flex:1; }
 .info-col-label { font-family:'Cinzel',serif; font-size:7px; letter-spacing:2.5px; color:rgba(196,149,106,.8); text-transform:uppercase; margin-bottom:5px; }
@@ -190,6 +205,12 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
   </div>
 </div>
 
+<div class="mode-tabs">
+  <button class="mode-tab active" id="tab-char" onclick="switchMode('char')">🎭 キャラカード</button>
+  <button class="mode-tab" id="tab-scene" onclick="switchMode('scene')">🏞 シーンカード</button>
+  <button class="mode-tab" id="tab-item" onclick="switchMode('item')">🎁 アイテムカード</button>
+</div>
+
 <div class="app-body">
   <!-- ━━━ 3列レイアウト ━━━ -->
   <div class="panels">
@@ -199,7 +220,7 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
 
       <!-- キャラ名 -->
       <div class="section">
-        <div class="section-label">Character Name</div>
+        <div class="section-label" id="label-name-section">Character Name</div>
         <input type="text" id="char-name" placeholder="キャラクター名を入力">
         <div class="checkbox-row">
           <label>フォント</label>
@@ -228,7 +249,7 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
       </div>
 
       <!-- 性格 -->
-      <div class="section">
+      <div class="section" id="section-params">
         <div class="section-label">Parameters（性格）</div>
         <div class="color-row">
           <label style="margin:0;">一括色設定</label>
@@ -240,7 +261,7 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
 
       <!-- 特徴 -->
       <div class="section">
-        <div class="section-label">Traits（特徴）</div>
+        <div class="section-label" id="label-trait-section">Traits（特徴）</div>
         <div class="color-row">
           <label style="margin:0;">一括色設定</label>
           <input type="color" id="trait-bulk-color" value="#9e4a7b">
@@ -250,7 +271,7 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
       </div>
 
       <!-- Gender -->
-      <div class="section">
+      <div class="section" id="section-gender">
         <div class="section-label">Gender（性別）</div>
         <div style="display:flex;gap:16px;align-items:center;">
           <label style="display:flex;align-items:center;gap:5px;margin:0;font-size:12px;color:#e8e0f0;cursor:pointer;">
@@ -266,7 +287,7 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
       </div>
 
       <!-- Tone -->
-      <div class="section">
+      <div class="section" id="section-tone">
         <div class="section-label">Tone（口調）</div>
         <input type="text" id="tone-input-1" value="標準" placeholder="口調1">
         <input type="text" id="tone-input-2" value="" placeholder="口調2（任意）">
@@ -322,7 +343,7 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
 
       <!-- First Message -->
       <div class="section">
-        <div class="section-label">First Message</div>
+        <div class="section-label" id="label-msg-section">First Message</div>
         <textarea id="first-msg" placeholder="キャラクターの最初のメッセージを入力&#10;改行も反映されます"></textarea>
         <div class="checkbox-row">
           <label>フォント</label>
@@ -384,13 +405,19 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
 
           <div id="fb-top"></div>
           <div id="fb-bottom" style="display:flex;align-items:center;justify-content:center;overflow:hidden;">
-            <svg width="480" height="18" xmlns="http://www.w3.org/2000/svg">
-              <text id="fb-bottom-stroke" x="240" y="13" text-anchor="middle"
+            <svg width="480" height="34" xmlns="http://www.w3.org/2000/svg">
+              <text id="fb-bottom-stroke" x="240" y="14" text-anchor="middle"
                 font-family="'Noto Sans JP', sans-serif" font-size="10" font-weight="400"
                 letter-spacing="0.5" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="3" stroke-linejoin="round">❖ このカードをGeminiやChatGTPなどのAIに渡すとロールプレイが始まるよ ❖</text>
-              <text id="fb-bottom-text" x="240" y="13" text-anchor="middle"
+              <text id="fb-bottom-text" x="240" y="14" text-anchor="middle"
                 font-family="'Noto Sans JP', sans-serif" font-size="10" font-weight="400"
                 letter-spacing="0.5" fill="rgba(255,225,160,0.95)">❖ このカードをGeminiやChatGTPなどのAIに渡すとロールプレイが始まるよ ❖</text>
+              <text id="fb-bottom-stroke2" x="240" y="27" text-anchor="middle"
+                font-family="'Noto Sans JP', sans-serif" font-size="10" font-weight="400"
+                letter-spacing="0.5" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="3" stroke-linejoin="round">❖ 他のキャラカードと一緒に渡すと、キャラ同士の会話が始まるよ！ ❖</text>
+              <text id="fb-bottom-text2" x="240" y="27" text-anchor="middle"
+                font-family="'Noto Sans JP', sans-serif" font-size="10" font-weight="400"
+                letter-spacing="0.5" fill="rgba(255,225,160,0.95)">❖ 他のキャラカードと一緒に渡すと、キャラ同士の会話が始まるよ！ ❖</text>
             </svg>
           </div>
           <div id="fb-left"></div>
@@ -402,25 +429,25 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
           <div class="gem-corner gem-bl"></div>
           <div class="gem-corner gem-br"></div>
 
-          <span class="ai-badge" style="position:absolute;top:10px;right:10px;z-index:30;">▶ AI INSTRUCTION ROLEPLAY START<br><span style="display:block;text-align:right;letter-spacing:0.5px;">IN CHARACTER RESPONSE</span></span>
+          <span class="ai-badge" id="ai-badge" style="position:absolute;top:10px;right:10px;z-index:30;">▶ AI INSTRUCTION ROLEPLAY START<br><span style="display:block;text-align:right;letter-spacing:0.5px;">IN CHARACTER RESPONSE</span></span>
 
           <div class="name-bar">
-            <div class="name-label"><span>Name</span></div>
+            <div class="name-label"><span id="card-name-label">Name</span></div>
             <div class="char-name" id="preview-name">ここにキャラクター名</div>
           </div>
 
           <div class="info-bar">
             <div class="info-section-row">
-              <div class="info-col">
+              <div class="info-col" id="card-col-params">
                 <div class="info-col-label">Parameters</div>
                 <div class="tags-row" id="preview-params"></div>
               </div>
               <div class="info-col">
-                <div class="info-col-label">Traits</div>
+                <div class="info-col-label" id="card-trait-label">Traits</div>
                 <div class="tags-row" id="preview-traits"></div>
               </div>
             </div>
-            <div style="display:flex;gap:12px;margin-bottom:7px;flex-wrap:wrap;align-items:center;border-top:1px solid rgba(196,149,106,0.2);padding-top:7px;">
+            <div id="card-gt-row" style="display:flex;gap:12px;margin-bottom:7px;flex-wrap:wrap;align-items:center;border-top:1px solid rgba(196,149,106,0.2);padding-top:7px;">
               <span style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(196,149,106,0.8);">Gender</span>
               <span id="preview-gender-chip" class="tag-pill" style="background:rgba(100,80,160,0.65);border:1px solid rgba(100,80,160,0.5);font-size:8px;">Female</span>
               <span style="font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;color:rgba(196,149,106,0.8);">Tone</span>
@@ -428,7 +455,7 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
               <span id="preview-tone-chip-2" class="tag-pill" style="display:none;background:rgba(60,100,120,0.65);border:1px solid rgba(60,100,120,0.5);font-size:8px;"></span>
               <span id="preview-tone-chip-3" class="tag-pill" style="display:none;background:rgba(60,100,120,0.65);border:1px solid rgba(60,100,120,0.5);font-size:8px;"></span>
             </div>
-            <div class="first-msg-label">First Message / Talk Start ▶</div>
+            <div class="first-msg-label" id="card-msg-label">First Message / Talk Start ▶</div>
             <div class="first-msg-text" id="preview-msg">ここにキャラクターのメッセージ</div>
           </div>
         </div><!-- #card -->
@@ -438,6 +465,7 @@ input[type=color] { width:34px; height:26px; padding:2px; border:1px solid rgba(
         <div class="section-label">使い方 / How to Use</div>
         <div class="usage-text">
           <p>ダウンロードした画像をAIに渡すだけで設定した内容に沿ったキャラクターのロールプレイが開始されます。</p>
+          <p>🏞 シーンカードはキャラカードと一緒に渡すと、そのシチュエーションで会話が始まります。🎁 アイテムカードはキャラカードと一緒に渡すと、キャラがそのアイテムに反応します。</p>
           <p>AIモデルや利用状況によっては画像の説明が返ってくる場合があります。その場合は「お話しよう」等を伝えると演じてくれます。または、画像と一緒に「お話しよう」「ロールプレイして」等を添えて送信すると初めから演じてくれます。</p>
           <p>以下のモデルで画像だけ渡してロールプレイが開始するのを確認しています。100%とは言えないのでご理解ください。また、モデルのバージョンアップやポリシーの変更があった場合に挙動が変わる可能性があります。</p>
           <div class="usage-table-label">■ 動作確認状況（カードを渡しただけでRP開始するか）</div>
@@ -481,6 +509,146 @@ function buildTagInputs(cid, colors, prefix) {
 buildTagInputs('param-grid', paramColors, 'param');
 buildTagInputs('trait-grid', traitColors, 'trait');
 
+// ━━━ モード管理 ━━━
+const MODES = {
+  char: {
+    tabId: 'tab-char',
+    nameSectionLabel: 'Character Name',
+    namePlaceholder: 'キャラクター名を入力',
+    nameDefault: 'ここにキャラクター名',
+    traitSectionLabel: 'Traits（特徴）',
+    tagPlaceholder: '特徴',
+    tagLimit: 6,
+    msgSectionLabel: 'First Message',
+    msgPlaceholder: 'キャラクターの最初のメッセージを入力\n改行も反映されます',
+    msgDefault: 'ここにキャラクターのメッセージ',
+    cardNameLabel: 'Name',
+    cardTraitLabel: 'Traits',
+    cardMsgLabel: 'First Message / Talk Start ▶',
+    badgeHTML: '▶ AI INSTRUCTION ROLEPLAY START<br><span style="display:block;text-align:right;letter-spacing:0.5px;">IN CHARACTER RESPONSE</span>',
+    band1: '❖ このカードをGeminiやChatGTPなどのAIに渡すとロールプレイが始まるよ ❖',
+    band2: '❖ 他のキャラカードと一緒に渡すと、キャラ同士の会話が始まるよ！ ❖',
+    fileSuffix: '_card.png',
+  },
+  scene: {
+    tabId: 'tab-scene',
+    nameSectionLabel: 'Scene Name（シーン名）',
+    namePlaceholder: 'シーン名を入力',
+    nameDefault: 'ここにシーン名',
+    traitSectionLabel: 'Place / Time（場所・時間）',
+    tagPlaceholder: '場所・時間',
+    tagLimit: 4,
+    msgSectionLabel: 'Description（説明・ヒント）',
+    msgPlaceholder: 'シーンの説明や展開のヒントを入力\n改行も反映されます',
+    msgDefault: 'ここにシーンの説明',
+    cardNameLabel: 'Scene',
+    cardTraitLabel: 'Place / Time',
+    cardMsgLabel: 'Scene Description ▶',
+    badgeHTML: '▶ AI INSTRUCTION SCENE START<br><span style="display:block;text-align:right;letter-spacing:0.5px;">ACT WITHIN THIS SITUATION</span>',
+    band1: '❖ このカードをAIに渡すとシーンが設定されるよ ❖',
+    band2: '❖ キャラカードと一緒に渡すと、このシチュエーションで会話が始まるよ！ ❖',
+    fileSuffix: '_scene_card.png',
+  },
+  item: {
+    tabId: 'tab-item',
+    nameSectionLabel: 'Item Name（アイテム名）',
+    namePlaceholder: 'アイテム名を入力',
+    nameDefault: 'ここにアイテム名',
+    traitSectionLabel: 'Features（見た目・特徴）',
+    tagPlaceholder: '見た目・特徴',
+    tagLimit: 4,
+    msgSectionLabel: 'Description（説明・ヒント）',
+    msgPlaceholder: 'アイテムの説明やヒントを入力\n改行も反映されます',
+    msgDefault: 'ここにアイテムの説明',
+    cardNameLabel: 'Item',
+    cardTraitLabel: 'Features',
+    cardMsgLabel: 'Item Description ▶',
+    badgeHTML: '▶ AI INSTRUCTION ITEM GIVEN<br><span style="display:block;text-align:right;letter-spacing:0.5px;">REACT TO THIS ITEM IN CHARACTER</span>',
+    band1: '❖ このカードをAIに渡すとアイテムが登場するよ ❖',
+    band2: '❖ キャラカードと一緒に渡すと、キャラがこのアイテムに反応するよ！ ❖',
+    fileSuffix: '_item_card.png',
+  },
+};
+
+let currentMode = 'char';
+
+// モードごとの入力値を保持（切替で消えないように）
+const modeStore = {
+  char:  { name:'', msg:'', tags: traitColors.map(c => ({text:'', color:c})) },
+  scene: { name:'', msg:'', tags: traitColors.map(c => ({text:'', color:c})) },
+  item:  { name:'', msg:'', tags: traitColors.map(c => ({text:'', color:c})) },
+};
+
+function saveModeInputs(mode) {
+  const s = modeStore[mode];
+  s.name = document.getElementById('char-name').value;
+  s.msg  = document.getElementById('first-msg').value;
+  for (let i=0; i<6; i++) {
+    s.tags[i].text  = document.getElementById('trait-text-'+i).value;
+    s.tags[i].color = document.getElementById('trait-color-'+i).value;
+  }
+}
+
+function loadModeInputs(mode) {
+  const s = modeStore[mode];
+  document.getElementById('char-name').value = s.name;
+  document.getElementById('first-msg').value = s.msg;
+  for (let i=0; i<6; i++) {
+    document.getElementById('trait-text-'+i).value  = s.tags[i].text;
+    document.getElementById('trait-color-'+i).value = s.tags[i].color;
+  }
+}
+
+function switchMode(mode) {
+  if (mode === currentMode) return;
+  saveModeInputs(currentMode);
+  currentMode = mode;
+  loadModeInputs(mode);
+  applyModeUI();
+  updatePreview();
+}
+
+function applyModeUI() {
+  const m = MODES[currentMode];
+  const isChar = currentMode === 'char';
+
+  // タブ表示
+  Object.values(MODES).forEach(cfg => document.getElementById(cfg.tabId).classList.remove('active'));
+  document.getElementById(m.tabId).classList.add('active');
+
+  // 入力パネル
+  document.getElementById('label-name-section').textContent = m.nameSectionLabel;
+  document.getElementById('char-name').placeholder = m.namePlaceholder;
+  document.getElementById('label-trait-section').textContent = m.traitSectionLabel;
+  document.getElementById('label-msg-section').textContent = m.msgSectionLabel;
+  document.getElementById('first-msg').placeholder = m.msgPlaceholder;
+  document.getElementById('section-params').style.display = isChar ? '' : 'none';
+  document.getElementById('section-gender').style.display = isChar ? '' : 'none';
+  document.getElementById('section-tone').style.display   = isChar ? '' : 'none';
+
+  // タグ入力：プレースホルダーと表示上限
+  for (let i=0; i<6; i++) {
+    const input = document.getElementById('trait-text-'+i);
+    input.placeholder = m.tagPlaceholder + (i+1);
+    input.parentElement.style.display = (i < m.tagLimit) ? '' : 'none';
+  }
+
+  // カード側
+  document.getElementById('ai-badge').innerHTML = m.badgeHTML;
+  document.getElementById('card-name-label').textContent = m.cardNameLabel;
+  document.getElementById('card-trait-label').textContent = m.cardTraitLabel;
+  document.getElementById('card-msg-label').textContent = m.cardMsgLabel;
+  document.getElementById('card-col-params').style.display = isChar ? '' : 'none';
+  document.getElementById('card-gt-row').style.display = isChar ? 'flex' : 'none';
+
+  // 下部帯テキスト
+  [['fb-bottom-stroke', m.band1], ['fb-bottom-text', m.band1],
+   ['fb-bottom-stroke2', m.band2], ['fb-bottom-text2', m.band2]].forEach(([id, txt]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = txt;
+  });
+}
+
 // ━━━ カラーユーティリティ ━━━
 function hexToRgb(h) { return {r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)}; }
 function hexToRgba(h,a) { const {r,g,b}=hexToRgb(h); return `rgba(${r},${g},${b},${a})`; }
@@ -523,13 +691,15 @@ function applyFrameColor(hex) {
   gemStyle.textContent = `.gem-corner::before { border-color: ${ac(0.75)} !important; } .gem-corner::after { background: ${ac(0.40)} !important; }`;
 
   const fbStroke = document.getElementById('fb-bottom-stroke');
-  if (fbStroke) {
+  const fbStroke2 = document.getElementById('fb-bottom-stroke2');
+  if (fbStroke || fbStroke2) {
     const bc = hexToRgb(hex);
     const lum3 = getLum(hex);
     const strokeCol = lum3 < 0.5
       ? `rgba(${Math.max(0,bc.r-60)},${Math.max(0,bc.g-60)},${Math.max(0,bc.b-60)},0.85)`
       : 'rgba(40,30,20,0.75)';
-    fbStroke.setAttribute('stroke', strokeCol);
+    if (fbStroke) fbStroke.setAttribute('stroke', strokeCol);
+    if (fbStroke2) fbStroke2.setAttribute('stroke', strokeCol);
   }
 }
 
@@ -591,7 +761,7 @@ function updateImg() {
 // ━━━ プレビュー更新 ━━━
 function updatePreview() {
   const nameEl = document.getElementById('preview-name');
-  nameEl.textContent = document.getElementById('char-name').value || 'ここにキャラクター名';
+  nameEl.textContent = document.getElementById('char-name').value || MODES[currentMode].nameDefault;
   nameEl.style.fontFamily = document.getElementById('name-font').value;
   nameEl.style.fontWeight = document.getElementById('name-bold').checked ? '900' : '400';
   nameEl.style.fontSize = '28px';
@@ -602,7 +772,7 @@ function updatePreview() {
   });
 
   const msgEl = document.getElementById('preview-msg');
-  msgEl.textContent = document.getElementById('first-msg').value || 'ここにキャラクターのメッセージ';
+  msgEl.textContent = document.getElementById('first-msg').value || MODES[currentMode].msgDefault;
   msgEl.style.fontFamily = document.getElementById('msg-font').value;
   msgEl.style.fontWeight = document.getElementById('msg-bold').checked ? '700' : '400';
   const msgSize = document.getElementById('msg-size').value;
@@ -628,7 +798,8 @@ function updatePreview() {
   ['param','trait'].forEach(p => {
     const container = document.getElementById(`preview-${p}s`);
     container.innerHTML = '';
-    for (let i=0; i<6; i++) {
+    const limit = (p === 'trait') ? MODES[currentMode].tagLimit : 6;
+    for (let i=0; i<limit; i++) {
       const t = document.getElementById(`${p}-text-${i}`).value;
       const col = document.getElementById(`${p}-color-${i}`).value;
       if (t) {
@@ -677,9 +848,9 @@ document.getElementById('dl-btn').addEventListener('click', async () => {
         });
       }
     });
-    const name = document.getElementById('char-name').value || 'character';
+    const name = document.getElementById('char-name').value || currentMode;
     const a = document.createElement('a');
-    a.download = name+'_card.png';
+    a.download = name + MODES[currentMode].fileSuffix;
     a.href = canvas.toDataURL('image/png');
     a.click();
   } catch(e) { alert('失敗: '+e.message); }
@@ -689,6 +860,7 @@ document.getElementById('dl-btn').addEventListener('click', async () => {
 // ━━━ エクスポート ━━━
 document.getElementById('export-btn').addEventListener('click', () => {
   const data = {
+    cardType: currentMode,
     charName: document.getElementById('char-name').value,
     nameFont: document.getElementById('name-font').value,
     nameBold: document.getElementById('name-bold').checked,
@@ -724,6 +896,7 @@ document.getElementById('import-input').addEventListener('change', e => {
   reader.onload = ev => {
     try {
       const data = JSON.parse(ev.target.result);
+      if (data.cardType && MODES[data.cardType]) switchMode(data.cardType);
       if (data.charName !== undefined) document.getElementById('char-name').value = data.charName;
       if (data.nameFont !== undefined) document.getElementById('name-font').value = data.nameFont;
       if (data.nameBold !== undefined) document.getElementById('name-bold').checked = data.nameBold;
@@ -807,6 +980,7 @@ document.querySelectorAll('input[type=text],textarea,input[type=color],select').
 });
 
 // ━━━ 初期化 ━━━
+applyModeUI();
 applyFrameColor('#1a1010');
 updatePreview();
 </script>
